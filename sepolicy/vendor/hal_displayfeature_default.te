@@ -18,8 +18,10 @@ allow hal_displayfeature_default {
 }:hwservice_manager find;
 
 allow hal_displayfeature_default sysfs_graphics:dir r_dir_perms;
-allow hal_displayfeature_default sysfs_graphics:file rw_file_perms;
-allow hal_displayfeature_default sysfs_graphics:lnk_file rw_file_perms;
+allow hal_displayfeature_default sysfs_graphics:{
+  file
+  lnk_file
+} rw_file_perms;
 
 set_prop(hal_displayfeature_default, vendor_displayfeature_prop)
 
