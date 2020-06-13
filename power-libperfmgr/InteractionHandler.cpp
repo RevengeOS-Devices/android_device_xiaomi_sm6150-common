@@ -54,16 +54,15 @@ bool InteractionHandler::Init() {
     if (mState != INTERACTION_STATE_UNINITIALIZED)
         return true;
 
-    mIdleFd = open(FB_IDLE_PATH, O_RDONLY);
-    if (mIdleFd < 0) {
-        ALOGE("Unable to open idle state path (%d)", errno);
-        return false;
-    }
+    int fd = fb_idle_open();
+    mIdleFd = fd;
 
     mEventFd = eventfd(0, EFD_NONBLOCK);
     if (mEventFd < 0) {
         ALOGE("Unable to create event fd (%d)", errno);
-        close(mIdleFd);
+        if (mIdleFd >= 0) {
+            close(mIdleFd);
+        }
         return false;
     }
 
@@ -87,7 +86,9 @@ void InteractionHandler::Exit() {
     mThread->join();
 
     close(mEventFd);
-    close(mIdleFd);
+    if (mIdleFd >= 0) {
+        close(mIdleFd);
+    }
 }
 
 void InteractionHandler::PerfLock() {
@@ -190,6 +191,11 @@ void InteractionHandler::WaitForIdle(int32_t wait_ms, int32_t timeout_ms) {
     ATRACE_CALL();
 
     ALOGV("%s: wait:%d timeout:%d", __func__, wait_ms, timeout_ms);
+
+    if (mIdleFd < 0) {
+        usleep(wait_ms + timeout_ms);
+        return;
+    }
 
     pfd[0].fd = mEventFd;
     pfd[0].events = POLLIN;
