@@ -13,9 +13,9 @@ INITIAL_COPYRIGHT_YEAR=2019
 MY_DIR="${BASH_SOURCE%/*}"
 if [[ ! -d "${MY_DIR}" ]]; then MY_DIR="${PWD}"; fi
 
-ION_ROOT="${MY_DIR}/../../.."
+REVENGE_ROOT="${MY_DIR}/../../.."
 
-HELPER="${ION_ROOT}/vendor/ion/build/tools/extract_utils.sh"
+HELPER="${REVENGE_ROOT}/vendor/revengeos/build/tools/extract_utils.sh"
 if [ ! -f "${HELPER}" ]; then
     echo "Unable to find helper script at ${HELPER}"
     exit 1
@@ -23,7 +23,7 @@ fi
 source "${HELPER}"
 
 # Initialize the helper for common
-setup_vendor "${DEVICE_COMMON}" "${VENDOR}" "${ION_ROOT}" true
+setup_vendor "${DEVICE_COMMON}" "${VENDOR}" "${REVENGE_ROOT}" true
 
 # Copyright headers and guards
 write_headers "davinci phoenix violet"
@@ -37,7 +37,7 @@ write_footers
 if [ -s "${MY_DIR}/../${DEVICE}/proprietary-files.txt" ]; then
     # Reinitialize the helper for device
     INITIAL_COPYRIGHT_YEAR="$DEVICE_BRINGUP_YEAR"
-    setup_vendor "${DEVICE}" "${VENDOR}" "${ION_ROOT}" false
+    setup_vendor "${DEVICE}" "${VENDOR}" "${REVENGE_ROOT}" false
 
     # Copyright headers and guards
     write_headers
